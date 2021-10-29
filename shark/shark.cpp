@@ -26,6 +26,7 @@ Shark::Shark(int width, int height, std::string title) {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     init_triangle();
+    init_square();
 
     std::string vertexCode, fragmentCode;
     std::ifstream vertexShaderFile, fragmentShaderFile;
@@ -101,7 +102,7 @@ Shark::Shark(int width, int height, std::string title) {
 
 Shark::~Shark() {
     glfwTerminate();
-    delete window;
+    window = NULL;
 }
 
 void Shark::init_triangle() {
@@ -122,10 +123,46 @@ void Shark::init_triangle() {
     glEnableVertexAttribArray(0);
 }
 
+void Shark::init_square() {
+    float vertices[] = {
+        0.5f, 0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+        -0.5f, -0.5f, 0.0f,
+        -0.5f, 0.5f, 0.0f
+    };
+
+    uint indices[] = {
+        0, 1, 3,
+        1, 2, 3
+    };
+
+    unsigned int VBO, EBO;
+    glGenVertexArrays(1, &VAO_SQUARE);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    glBindVertexArray(VAO_SQUARE);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glEnableVertexAttribArray(0);
+
+}
+
 void Shark::Draw() {
     glfwSwapBuffers(window);
 }
 
+void Shark::Square(float x, float y) {
+    int location = glGetUniformLocation(ID, "offset");
+    glUniform2f(location, x, y);
+    glBindVertexArray(VAO_SQUARE);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+}
 
 void Shark::Triangle(float x, float y) {
     int location = glGetUniformLocation(ID, "offset");
@@ -151,7 +188,6 @@ void Shark::Color(COLORS color) {
 void Shark::Color(float red, float green, float blue) {
     int location = glGetUniformLocation(ID, "color");
     glUniform3f(location, red, green, blue);
-
 }
 
 void Shark::BackgroundColor(COLORS color) {

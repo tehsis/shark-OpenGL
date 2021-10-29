@@ -23,6 +23,7 @@ class Shark {
     void Color(COLORS color);
     void Color(float red, float green, float blue);
     void Triangle(float x, float y);
+    void Square(float x, float y);
     void BackgroundColor(COLORS color);
     void Draw();
 
@@ -30,5 +31,7 @@ class Shark {
     GLFWwindow* window;
     unsigned int ID;
     unsigned int VAO_TRIANGLE;
+    unsigned int VAO_SQUARE;
     void init_triangle();
+    void init_square();
 };
